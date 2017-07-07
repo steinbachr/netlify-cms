@@ -1,6 +1,6 @@
-## Extending With Widgets
+# Extending With Widgets
 
-The NetlifyCMS exposes an `window.CMS` global object that you can use to register custom widgets, previews and editor plugins. The available widger extension methods are:
+The NetlifyCMS exposes an `window.CMS` global object that you can use to register custom widgets, previews and editor plugins. The available widget extension methods are:
 
 * **registerWidget** lets you register a custom widget.
 * **registerEditorComponent** lets you add a block component to the Markdown editor
@@ -30,7 +30,7 @@ CMS.registerWidget(field, control, \[preview\])
 **Example:**
 
 ```html
-<script src="https://unpkg.com/netlify-cms@^0.x/dist/cms.js"></script>
+<script src="https://unpkg.com/netlify-cms@~0.4/dist/cms.js"></script>
 <script>
 var CategoriesControl = createClass({
   handleChange: function(e) {
@@ -60,7 +60,7 @@ Register a block level component for the Markdown editor
 **Example:**
 
 ```html
-<script src="https://unpkg.com/netlify-cms@^0.x/dist/cms.js"></script>
+<script src="https://unpkg.com/netlify-cms@~0.4/dist/cms.js"></script>
 <script>
 CMS.registerEditorComponent({
   // Internal id of the component

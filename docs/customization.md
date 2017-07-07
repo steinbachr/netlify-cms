@@ -1,4 +1,4 @@
-## Customizing the Preview Pane
+# Customizing the Preview Pane
 
 The NetlifyCMS exposes an `window.CMS` global object that you can use to register custom widgets, previews and editor plugins. The available customization methods are:
 
@@ -26,7 +26,7 @@ CMS.registerPreviewStyle(file);
 **Example:**
 ```html
 // index.html
-<script src="https://unpkg.com/netlify-cms@^0.x/dist/cms.js"></script>
+<script src="https://unpkg.com/netlify-cms@~0.4/dist/cms.js"></script>
 <script>
   CMS.registerPreviewStyle("/example.css");
 </script>
@@ -67,7 +67,7 @@ Registers a template for a collection.
     **Example:**
     
     ```html
-    <script src="https://unpkg.com/netlify-cms@^0.x/dist/cms.js"></script>
+    <script src="https://unpkg.com/netlify-cms@~0.4/dist/cms.js"></script>
     <script>
     var PostPreview = createClass({
       render: function() {

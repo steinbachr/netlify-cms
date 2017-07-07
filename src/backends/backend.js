@@ -1,9 +1,11 @@
+import { attempt, isError } from 'lodash';
 import TestRepoBackend from "./test-repo/implementation";
 import GitHubBackend from "./github/implementation";
 import NetlifyAuthBackend from "./netlify-auth/implementation";
 import { resolveFormat } from "../formats/formats";
-import { selectListMethod, selectEntrySlug, selectEntryPath, selectAllowNewEntries } from "../reducers/collections";
+import { selectListMethod, selectEntrySlug, selectEntryPath, selectAllowNewEntries, selectFolderEntryExtension } from "../reducers/collections";
 import { createEntry } from "../valueObjects/Entry";
+import slug from 'slug';
 
 class LocalStorageAuthStore {
   storageKey = "netlify-cms-user";
@@ -24,7 +26,22 @@ class LocalStorageAuthStore {
 
 const slugFormatter = (template = "{{slug}}", entryData) => {
   const date = new Date();
-  const identifier = entryData.get("title", entryData.get("path"));
+
+  const getIdentifier = (entryData) => {
+    const validIdentifierFields = ["title", "path"];
+    const identifiers = validIdentifierFields.map((field) =>
+      entryData.find((_, key) => key.toLowerCase().trim() === field)
+    );
+
+    const identifier = identifiers.find(ident => ident !== undefined);
+
+    if (identifier === undefined) {
+      throw new Error("Collection must have a field name that is a valid entry identifier"); 
+    }
+
+    return identifier;
+  };
+  
   return template.replace(/\{\{([^\}]+)\}\}/g, (_, field) => {
     switch (field) {
       case "year":
@@ -34,9 +51,9 @@ const slugFormatter = (template = "{{slug}}", entryData) => {
       case "day":
         return (`0${ date.getDate() }`).slice(-2);
       case "slug":
-        return identifier.trim().toLowerCase().replace(/[^a-z0-9\-_]+/gi, "-");
+        return slug(getIdentifier(entryData).trim(), {lower: true});
       default:
-        return entryData.get(field, "").trim().toLowerCase().replace(/[^a-z0-9\.\-_]+/gi, "-");
+        return slug(entryData.get(field, "").trim(), {lower: true});
     }
   });
 };
@@ -82,18 +99,26 @@ class Backend {
 
   listEntries(collection) {
     const listMethod = this.implementation[selectListMethod(collection)];
-    return listMethod.call(this.implementation, collection)
+    const extension = selectFolderEntryExtension(collection);
+    const collectionFilter = collection.get('filter');
+    return listMethod.call(this.implementation, collection, extension)
       .then(loadedEntries => (
         loadedEntries.map(loadedEntry => createEntry(
           collection.get("name"),
           selectEntrySlug(collection, loadedEntry.file.path),
           loadedEntry.file.path,
-          { raw: loadedEntry.data, label: loadedEntry.file.label }
+          { raw: loadedEntry.data || '', label: loadedEntry.file.label }
         ))
       ))
       .then(entries => (
         {
           entries: entries.map(this.entryWithFormat(collection)),
+        }
+      ))
+      // If this collection has a "filter" property, filter entries accordingly
+      .then(loadedCollection => (
+        {
+          entries: collectionFilter ? this.filterEntries(loadedCollection, collectionFilter) : loadedCollection.entries
         }
       ));
   }
@@ -112,8 +137,10 @@ class Backend {
   entryWithFormat(collectionOrEntity) {
     return (entry) => {
       const format = resolveFormat(collectionOrEntity, entry);
-      if (entry && entry.raw) {
-        return Object.assign(entry, { data: format && format.fromFile(entry.raw) });
+      if (entry && entry.raw !== undefined) {
+        const data = (format && attempt(format.fromFile.bind(null, entry.raw))) || {};
+        if (isError(data)) console.error(data);
+        return Object.assign(entry, { data: isError(data) ? {} : data });
       }
       return format.fromFile(entry);
     };
@@ -237,6 +264,12 @@ class Backend {
       throw new Error(`No file found for ${ entry.get("slug") } in ${ collection.get('name') }`);
     }
     return file.get('fields').map(f => f.get('name')).toArray();
+  }
+
+  filterEntries(collection, filterRule) {
+    return collection.entries.filter(entry => (
+      entry.data[filterRule.get('field')] === filterRule.get('value')
+    ));
   }
 }
 

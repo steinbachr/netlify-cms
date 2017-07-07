@@ -13,13 +13,15 @@ In order to use Netlify's authentication provider service, you'll need to connec
 ### Authenticating with GitHub
 
 In order to connect Netlify CMS with your GitHub repo, you'll first need to register it as an authorized application with your GitHub account:
+
  1. Go to your account **Settings** page on GitHub, and click **Oauth Applications** under **Developer Settings** (or use [this shortcut](https://github.com/settings/developers)).
  2. Click **Register a new application**.
  3. For the **Authorization callback URL**, enter `https://api.netlify.com/auth/done`. The other fields can contain anything you want.
 
-![GitHub Oauth Application setup example](images/github-oauth.png?raw=true)
+![GitHub Oauth Application setup example](/img/github-oauth.png?raw=true)
 
 When you complete the registration, you'll be given a **Client ID** and a **Client Secret** for the app. You'll need to add these to your Netlify project:
+
  1. Go to your [**Netlify dashboard**](https://app.netlify.com/) and click on your project.
  2. Click the **Access** tab.
  3. Under **Authentication Providers**, click **Install Provider**.
@@ -54,12 +56,12 @@ The first file, `admin/index.html`, is the entry point for the Netlify CMS admin
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Manager</title>
-  
-  <link rel="stylesheet" href="https://unpkg.com/netlify-cms@^0.3/dist/cms.css" />
+
+  <link rel="stylesheet" href="https://unpkg.com/netlify-cms@~0.4/dist/cms.css" />
 
 </head>
 <body>
-  <script src="https://unpkg.com/netlify-cms@^0.3/dist/cms.js"></script>
+  <script src="https://unpkg.com/netlify-cms@~0.4/dist/cms.js"></script>
 </body>
 </html>
 ```
@@ -82,7 +84,7 @@ backend:
 This names GitHub as the authentication provider, points to the repo location on github.com, and declares the branch where you want to merge changes. If you leave out the `branch` declaration, it will default to `master`.
 
 ### Editorial Workflow
-By default, saving a post in the CMS interface will push a commit directly to the branch specified in `backend`. However, you also have the option to enable the [Editorial Workflow](editorial_workflow.md), which adds an interface for drafting, reviewing, and approving posts. To do this, simply add this line to your `config.yml`:
+By default, saving a post in the CMS interface will push a commit directly to the branch specified in `backend`. However, you also have the option to enable the [Editorial Workflow](editorial-workflow.md), which adds an interface for drafting, reviewing, and approving posts. To do this, simply add this line to your `config.yml`:
 
 ``` yaml
 publish_mode: editorial_workflow
@@ -109,7 +111,7 @@ This configuration adds a new setting, `public_folder`. While `media_folder` spe
 >If `public_folder` is not set, Netlify CMS will default to the same value as `media_folder`, adding an opening `/` if one is not included.
 
 ### Collections
-Collections define the structure for the different content types on your static site. Since every site is different, the `collections` settings will be very different from one site to the next. Let's say your site has a blog, with the posts stored in `_posts/blog`, and files saved in a date-title format, like `1999-12-31-lets-party.md`. Each post 
+Collections define the structure for the different content types on your static site. Since every site is different, the `collections` settings will be very different from one site to the next. Let's say your site has a blog, with the posts stored in `_posts/blog`, and files saved in a date-title format, like `1999-12-31-lets-party.md`. Each post
 begins with settings in yaml-formatted front matter, like so:
 
 ``` yaml
@@ -193,9 +195,23 @@ Widget | UI | Data Type
 
 Based on this example, you can go through the post types in your site and add the appropriate settings to your `config.yml` file. Each post type should be listed as a separate node under the `collections` field.
 
+### Filter
+The entries for any collection can be filtered based on the value of a single field. The example
+collection below would only show post entries with the value "en" in the language field.
+
+``` yaml
+collections:
+  - name: "posts"
+    label: "Post"
+    folder: "_posts"
+    filter:
+      field: language
+      value: en
+    fields:
+      - {label: "Language", name: "language"}
+```
 ## Accessing the App
 
 With your configuration complete, it's time to try it out! Go to `yoursite.com/admin` and complete the login prompt to access the admin interface. To add users, simply add them as collaborators on the GitHub repo.
 
 Happy posting!
-

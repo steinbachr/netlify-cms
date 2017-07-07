@@ -5,12 +5,24 @@
   height: 100%;
 }
 
+.previewToggle {
+  position: absolute;
+  top: 8px;
+  right: 40px;
+  z-index: 1000;
+  opacity: 0.8;
+}
+
+.previewToggleShow {
+  right: 60px;
+}
+
 .controlPane {
-  height: calc(100% - 55px);
   overflow: auto;
-  padding: 0 20px;
+  padding: 20px 20px 0;
+  height: calc(100% - 55px);
   border-right: 1px solid var(--defaultColorLight);
-  background-color: color(#f2f5f4 lightness(90%));
+  background-color: var(--backgroundColor);
 }
 
 .previewPane {
@@ -29,7 +41,18 @@
   left: 0;
   right: 0;
   bottom: 0;
-  border-top: 1px solid var(--defaultColorLight);
+  border-top: var(--border);
   background: var(--backgroundColor);
   text-align: right;
+}
+
+.noPreviewEditorContainer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100%;
+}
+
+.ProseMirror {
+  border: var(--textFieldBorder);
 }

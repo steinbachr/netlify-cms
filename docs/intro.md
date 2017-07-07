@@ -25,11 +25,11 @@ The admin interface is a single-page app with the entry point stored in a static
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Content Manager</title>
   
-  <link rel="stylesheet" href="https://unpkg.com/netlify-cms@^0.3/dist/cms.css" />
+  <link rel="stylesheet" href="https://unpkg.com/netlify-cms@~0.4/dist/cms.css" />
   
 </head>
 <body>
-  <script src="https://unpkg.com/netlify-cms@^0.3/dist/cms.js"></script>
+  <script src="https://unpkg.com/netlify-cms@~0.4/dist/cms.js"></script>
 </body>
 </html>
 ```
@@ -38,7 +38,7 @@ The JS is also available via npm and can be integrated into your regular build p
 
 ### Editorial Workflow
 
-Netlify CMS has an optional [editorial workflow](https://github.com/netlify/netlify-cms/blob/master/docs/editorial_workflow.md) that translates common Git commands into familiar language in a simple UI:
+Netlify CMS has an optional [editorial workflow](https://github.com/netlify/netlify-cms/blob/master/docs/editorial-workflow.md) that translates common Git commands into familiar language in a simple UI:
 
 Actions in Netlify UI...	| Perform these Git actions
 --- | ---

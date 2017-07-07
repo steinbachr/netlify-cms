@@ -30,7 +30,7 @@ export default class ListControl extends Component {
     onChange: PropTypes.func.isRequired,
     value: PropTypes.node,
     field: PropTypes.node,
-    forID: PropTypes.string.isRequired,
+    forID: PropTypes.string,
     getAsset: PropTypes.func.isRequired,
     onAddAsset: PropTypes.func.isRequired,
     onRemoveAsset: PropTypes.func.isRequired,
@@ -89,17 +89,21 @@ export default class ListControl extends Component {
 
   handleChangeFor(index) {
     return (newValue, newMetadata) => {
-      const { value, onChange } = this.props;
+      const { value, metadata, onChange, forID } = this.props;
       const parsedValue = (this.valueType === valueTypes.SINGLE) ? newValue.first() : newValue;
-      onChange(value.set(index, parsedValue), newMetadata);
+      const parsedMetadata = {
+        [forID]: Object.assign(metadata ? metadata.toJS() : {}, newMetadata ? newMetadata[forID] : {}),
+      };
+      onChange(value.set(index, parsedValue), parsedMetadata);
     };
   }
 
   handleRemove(index) {
     return (e) => {
       e.preventDefault();
-      const { value, onChange } = this.props;
-      onChange(value.remove(index));
+      const { value, metadata, onChange, forID } = this.props;
+      const parsedMetadata = metadata && { [forID]: metadata.removeIn(value.get(index).valueSeq()) };
+      onChange(value.remove(index), parsedMetadata);
     };
   }
 
@@ -166,12 +170,14 @@ export default class ListControl extends Component {
   }
 
   renderListControl() {
-    const { value, forID } = this.props;
+    const { value, forID, field } = this.props;
+    const listLabel = field.get('label');
+
     return (<div id={forID}>
       {value && value.map((item, index) => this.renderItem(item, index))}
       <button className={styles.addButton} onClick={this.handleAdd}>
         <FontIcon value="add" className={styles.addButtonIcon} />
-        <span className={styles.addButtonText}>new</span>
+        <span className={styles.addButtonText}>new {listLabel}</span>
       </button>
     </div>);
   }
